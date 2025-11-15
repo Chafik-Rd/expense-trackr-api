@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "target": "es2021",
-    "module": "commonjs",
-    "moduleResolution": "node",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
 
     // File Layout
     "rootDir": "./src",
@@ -19,13 +19,14 @@
 
     // Recommended Options
     "strict": true,
-    // "verbatimModuleSyntax": true,
+    "verbatimModuleSyntax": true,
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
     "allowJs": true,
     "resolveJsonModule": true,
+    "esModuleInterop": true,
 
     // TypeORM
     "emitDecoratorMetadata": true,
