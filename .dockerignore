@@ -1,0 +1,24 @@
+# 1. โฟลเดอร์ที่เกิดจากการติดตั้ง Dependencies
+node_modules
+
+# 2. ไฟล์ที่เกิดจากการ Build (TypeScript Output)
+dist
+
+# 3. โฟลเดอร์สำหรับ Development และ Test
+temp
+logs
+*.log
+npm-debug.log*
+.nyc_output/
+/coverage/
+
+# 4. ไฟล์การตั้งค่าเฉพาะเครื่อง
+.env
+.DS_Store
+
+# 5. ไฟล์และโฟลเดอร์ของ Git
+.git
+.gitignore
+
+# 6. ไฟล์ที่เกิดจากการรัน ts-node-dev (บางครั้งอาจถูกสร้างขึ้น)
+.ts-node

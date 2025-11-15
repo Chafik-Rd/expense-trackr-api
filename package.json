@@ -13,7 +13,7 @@
    "scripts": {
       "test": "echo \"Error: no test specified\" && exit 1",
       "build": "tsc -p tsconfig.json",
-      "start": "ts-node src/index.ts",
+      "start": "node dist/server.js",
       "dev": "tsx watch src/server.ts",
       "typeorm": "typeorm-ts-node-commonjs"
    },
@@ -24,7 +24,7 @@
    "keywords": [],
    "author": "",
    "license": "ISC",
-   "type": "module",
+   "type": "commonjs",
    "bugs": {
       "url": "https://github.com/Chafik-Rd/expense-trackr-api/issues"
    },

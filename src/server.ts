@@ -6,9 +6,8 @@ server.get("/ping", async (request, reply) => {
   return "pong\n";
 });
 
-
 const port = 8085;
-server.listen({ port }, (err, address) => {
+server.listen({ port, host: "0.0.0.0" }, (err, address) => {
   if (err) {
     console.error(err);
     process.exit(1);
