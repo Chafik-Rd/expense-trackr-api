@@ -1,6 +1,7 @@
 {
    "dependencies": {
       "@fastify/cors": "^11.1.0",
+      "bcrypt": "^6.0.0",
       "dotenv": "^17.2.3",
       "fastify": "^5.6.2",
       "pg": "^8.16.3",
@@ -32,6 +33,7 @@
    },
    "homepage": "https://github.com/Chafik-Rd/expense-trackr-api#readme",
    "devDependencies": {
+      "@types/bcrypt": "^6.0.0",
       "@types/node": "^24.10.1",
       "ts-node": "^10.9.2",
       "ts-node-dev": "^2.0.0",

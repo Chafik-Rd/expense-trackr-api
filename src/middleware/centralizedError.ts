@@ -2,13 +2,13 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 import type { HttpError } from "../types/fastify.type.js";
 
 export const centralizedError = (
-  error: HttpError,
-  request: FastifyRequest,
+  err: HttpError,
+  req: FastifyRequest,
   reply: FastifyReply
 ) => {
-  console.error(error.stack);
-  reply.code(error.status || 500).send({
+  console.error(err.stack);
+  reply.code(err.status || 500).send({
     success: false,
-    message: error.message || "Internal Server Error",
+    message: err.message || "Internal Server Error",
   });
 };
