@@ -1,4 +1,3 @@
-import type { FastifyRequest } from "fastify";
 import type { JwtPayload } from "jsonwebtoken";
 
 export interface UserLoingType {
@@ -15,5 +14,5 @@ export interface UserTokenPayload extends JwtPayload {
 }
 
 export interface JwtError extends Error {
-    name: "TokenExpiredError" | "JsonWebTokenError" | "NotBeforeError";
+  name: "TokenExpiredError" | "JsonWebTokenError" | "NotBeforeError";
 }

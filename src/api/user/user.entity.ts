@@ -6,6 +6,7 @@ import {
   BeforeInsert,
   BeforeUpdate,
   OneToMany,
+  UpdateDateColumn,
 } from "typeorm";
 import bcrypt from "bcrypt";
 import { Transactions } from "../transactions/transactions.entity.js";
@@ -30,7 +31,7 @@ export class User {
   @CreateDateColumn({ type: "timestamptz" })
   created_at!: Date;
 
-  @CreateDateColumn({ type: "timestamptz" })
+  @UpdateDateColumn({ type: "timestamptz" })
   updated_at!: Date;
 
   @BeforeInsert()

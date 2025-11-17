@@ -17,7 +17,13 @@ const app = fastify({
 
 app.register(dbPlugin);
 app.register(cookie);
-app.register(fastifyMultipart, { attachFieldsToBody: true });
+app.register(fastifyMultipart, {
+  limits: {
+    fileSize: 1024 * 1024 * 5, // 5MB
+    files: 1,
+  },
+  attachFieldsToBody: true,
+});
 
 // API Routes
 app.register(

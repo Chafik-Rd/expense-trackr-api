@@ -3,8 +3,10 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from "typeorm";
 import { User } from "../user/user.entity.js";
 
@@ -20,11 +22,29 @@ export class Transactions {
   @JoinColumn({ name: "user_id" })
   user!: User;
 
-  @Column({ type: "varchar" })
+  @Column({ type: "uuid" })
   category_id!: string;
+
+  @ManyToMany(() => Category, (category) => category.transactions, {
+    onDelete: "CASCADE",
+  })
+  @JoinColumn({ name: "category_id" })
+  category!: Category;
+
+  @Column({ type: "uuid" })
+  account_id!: string;
+
+  @ManyToMany(() => Account, (account) => account.transactions, {
+    onDelete: "CASCADE",
+  })
+  @JoinColumn({ name: "account_id" })
+  account!: Account;
 
   @Column({ type: "integer" })
   amount!: number;
+
+  @Column({ type: "varchar", enum: ["income", "expense"] })
+  type!: string;
 
   @Column({ type: "varchar", nullable: true })
   file_image?: string | undefined;
@@ -35,6 +55,6 @@ export class Transactions {
   @CreateDateColumn({ type: "timestamptz" })
   created_at!: Date;
 
-  @CreateDateColumn({ type: "timestamptz" })
+  @UpdateDateColumn({ type: "timestamptz" })
   updated_at!: Date;
 }

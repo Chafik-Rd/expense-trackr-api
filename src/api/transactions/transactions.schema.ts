@@ -1,22 +1,26 @@
 import zod from "zod";
 
-const createTransactionSchema = zod.object({
-  amount: zod.number().min(0),
-  file_image: zod.string().url().optional(),
-  note: zod.string().optional(),
-  user_id: zod.string(),
-  category_id: zod.string(),
+const MultipartTextField = zod.object({
+  value: zod.string(),
 });
-export const createTransactionSchemaJSON = zod.toJSONSchema(
-  createTransactionSchema
-);
-delete createTransactionSchemaJSON.$schema;
 
-// Upload image to cloudinary
-const UploadImageBodySchema = zod.object({
-  file_image: zod.any(),
+// Create transaction
+export const createTransactionSchema = zod.object({
+  amount: MultipartTextField.transform((field) => field.value)
+    .pipe(zod.coerce.number())
+    .pipe(zod.number().min(0)),
+
+  note: MultipartTextField.transform((field) => field.value)
+    .pipe(zod.string())
+    .optional(),
+
+  category_id: MultipartTextField.transform((field) => field.value).pipe(
+    zod.string()
+  ),
+  account_id: MultipartTextField.transform((field) => field.value).pipe(
+    zod.string()
+  ),
+  type: MultipartTextField.transform((field) => field.value).pipe(zod.string()),
+
+  file_image: zod.any().optional(),
 });
-export const UploadImageBodySchemaJSON = zod.toJSONSchema(
-  UploadImageBodySchema
-);
-delete UploadImageBodySchemaJSON.$schema;

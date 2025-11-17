@@ -1,5 +1,5 @@
 import zod from "zod";
-import { getSchemaWithoutSchemaTag } from "../../utils/zodSchema.js";
+import { getSchemaWithoutSchemaTag } from "../../utils/schema.js";
 
 // Create user
 const createUserSchema = zod.object({
