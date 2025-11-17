@@ -3,10 +3,11 @@ import dotenv from "dotenv";
 
 import { centralizedError } from "./middleware/centralizedError.js";
 import dbPlugin from "./plugins/db.js";
-import userRoutes from "./api/user/user.route.js";
-import transactionRoutes from "./api/transactions/transactions.route.js";
 import fastifyMultipart from "@fastify/multipart";
 import cookie from "@fastify/cookie";
+import userRoutes from "./api/user/user.route.js";
+import transactionRoutes from "./api/transactions/transactions.route.js";
+import accountRoutes from "./api/account/account.route.js";
 
 // Load environment variables from .env file
 dotenv.config();
@@ -30,6 +31,7 @@ app.register(
   (instance) => {
     instance.register(userRoutes, { prefix: "/user" });
     instance.register(transactionRoutes, { prefix: "/transaction" });
+    instance.register(accountRoutes, { prefix: "/account" });
   },
   { prefix: "/api/v1" }
 );

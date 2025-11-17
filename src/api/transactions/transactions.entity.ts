@@ -9,6 +9,7 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 import { User } from "../user/user.entity.js";
+import { Account } from "../account/account.entity.js";
 
 @Entity()
 export class Transactions {
@@ -25,7 +26,7 @@ export class Transactions {
   @Column({ type: "uuid" })
   category_id!: string;
 
-  @ManyToMany(() => Category, (category) => category.transactions, {
+  @ManyToOne(() => Category, (category) => category.transactions, {
     onDelete: "CASCADE",
   })
   @JoinColumn({ name: "category_id" })
@@ -34,7 +35,7 @@ export class Transactions {
   @Column({ type: "uuid" })
   account_id!: string;
 
-  @ManyToMany(() => Account, (account) => account.transactions, {
+  @ManyToOne(() => Account, (account) => account.transactions, {
     onDelete: "CASCADE",
   })
   @JoinColumn({ name: "account_id" })

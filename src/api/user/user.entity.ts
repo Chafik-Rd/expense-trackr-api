@@ -10,6 +10,7 @@ import {
 } from "typeorm";
 import bcrypt from "bcrypt";
 import { Transactions } from "../transactions/transactions.entity.js";
+import { Account } from "../account/account.entity.js";
 
 @Entity()
 export class User {
@@ -43,4 +44,7 @@ export class User {
 
   @OneToMany(() => Transactions, (transaction) => transaction.user)
   transactions!: Transactions;
+
+  @OneToMany(() => Account, (account) => account.user)
+  account!: Account;
 }
