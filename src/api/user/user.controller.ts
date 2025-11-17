@@ -1,6 +1,6 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import type { HttpError } from "../../types/fastify.type.js";
-import type { UserLoingType, UserType } from "../../types/user.type.js";
+import type { UserLoginType, UserType } from "../../types/user.type.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
@@ -74,7 +74,7 @@ export const getUserProfile = async (
 
 // Login user
 export const loginUser = async (
-  req: FastifyRequest<{ Body: UserLoingType }>,
+  req: FastifyRequest<{ Body: UserLoginType }>,
   reply: FastifyReply
 ) => {
   const userRepo = req.server.db.user;

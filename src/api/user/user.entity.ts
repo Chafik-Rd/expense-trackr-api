@@ -11,6 +11,7 @@ import {
 import bcrypt from "bcrypt";
 import { Transactions } from "../transactions/transactions.entity.js";
 import { Account } from "../account/account.entity.js";
+import { Category } from "../category/category.entity.js";
 
 @Entity()
 export class User {
@@ -47,4 +48,7 @@ export class User {
 
   @OneToMany(() => Account, (account) => account.user)
   account!: Account;
+
+  @OneToMany(() => Category, (category) => category.user)
+  category!: Category;
 }

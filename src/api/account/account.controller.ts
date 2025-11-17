@@ -1,6 +1,7 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import type { AccountParams, AccountType } from "../../types/account.type.js";
-import type { GetQueryType, HttpError } from "../../types/fastify.type.js";
+import type { HttpError } from "../../types/fastify.type.js";
+import type { GetQueryType } from "../../types/shared.type.js";
 
 // Create account
 export const createAccount = async (
@@ -111,19 +112,20 @@ export const getAccount = async (
     const [accounts, total] = await accountRepo.findAndCount({
       where: { user_id: userId },
       take: limit,
-      skip: skip,
+      skip,
       order: { created_at: "DESC" },
     });
 
     const totalPages = Math.ceil(total / limit);
+
     reply.code(200).send({
       success: true,
       data: accounts,
       meta: {
-        total: total,
-        page: page,
-        limit: limit,
-        totalPages: totalPages,
+        total,
+        page,
+        limit,
+        totalPages,
       },
       message: "Accounts retrieved successfully!",
     });

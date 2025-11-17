@@ -3,6 +3,7 @@ import { DataSource } from "typeorm";
 import { User } from "./api/user/user.entity.js";
 import { Transactions } from "./api/transactions/transactions.entity.js";
 import { Account } from "./api/account/account.entity.js";
+import { Category } from "./api/category/category.entity.js";
 
 export const AppDataSource = new DataSource({
   type: "postgres",
@@ -13,7 +14,7 @@ export const AppDataSource = new DataSource({
   database: process.env.DB_NAME!,
   synchronize: true,
   logging: false,
-  entities: [User, Transactions, Account],
+  entities: [User, Transactions, Account, Category],
   migrations: [],
   subscribers: [],
 });
