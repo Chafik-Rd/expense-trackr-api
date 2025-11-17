@@ -1,11 +1,13 @@
 {
    "dependencies": {
+      "@fastify/cookie": "^11.0.2",
       "@fastify/cors": "^11.1.0",
       "@fastify/multipart": "^9.3.0",
       "bcrypt": "^6.0.0",
       "cloudinary": "^2.8.0",
       "dotenv": "^17.2.3",
       "fastify": "^5.6.2",
+      "jsonwebtoken": "^9.0.2",
       "pg": "^8.16.3",
       "reflect-metadata": "^0.2.2",
       "tnthai": "^1.0.4",
@@ -37,6 +39,7 @@
    "homepage": "https://github.com/Chafik-Rd/expense-trackr-api#readme",
    "devDependencies": {
       "@types/bcrypt": "^6.0.0",
+      "@types/jsonwebtoken": "^9.0.10",
       "@types/node": "^24.10.1",
       "ts-node": "^10.9.2",
       "ts-node-dev": "^2.0.0",

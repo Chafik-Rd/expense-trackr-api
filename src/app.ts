@@ -6,6 +6,7 @@ import dbPlugin from "./plugins/db.js";
 import userRoutes from "./api/user/user.route.js";
 import transactionRoutes from "./api/transactions/transactions.route.js";
 import fastifyMultipart from "@fastify/multipart";
+import cookie from "@fastify/cookie";
 
 // Load environment variables from .env file
 dotenv.config();
@@ -15,7 +16,8 @@ const app = fastify({
 });
 
 app.register(dbPlugin);
-app.register(fastifyMultipart,{attachFieldsToBody: true,});
+app.register(cookie);
+app.register(fastifyMultipart, { attachFieldsToBody: true });
 
 // API Routes
 app.register(

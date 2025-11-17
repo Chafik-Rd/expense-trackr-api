@@ -1,6 +1,8 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import type { HttpError } from "../../types/fastify.type.js";
-import type { UserType } from "../../types/user.type.js";
+import type { UserLoingType, UserType } from "../../types/user.type.js";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 // Create user
 export const createUser = async (
@@ -49,19 +51,118 @@ export const getUserProfile = async (
   reply: FastifyReply
 ) => {
   const userRepo = req.server.db.user;
+  const userId = req.user!.id;
 
   try {
-    const users = await userRepo.find();
-    if (users.length === 0) {
+    const user = await userRepo.findOne({ where: { id: userId } });
+    if (!user) {
+      const error: HttpError = new Error("User not found!");
+      error.status = 404;
+      throw error;
+    }
+    const { password, ...userNotPassword } = user;
+
+    reply.code(200).send({
+      success: true,
+      data: userNotPassword,
+      message: "User profile retrieved successfully!",
+    });
+  } catch (err) {
+    throw err;
+  }
+};
+
+// Login user
+export const loginUser = async (
+  req: FastifyRequest<{ Body: UserLoingType }>,
+  reply: FastifyReply
+) => {
+  const userRepo = req.server.db.user;
+  const { email, password } = req.body;
+
+  try {
+    const user = await userRepo.findOne({ where: { email } });
+
+    // Check email user exists
+    if (!user) {
+      const error: HttpError = new Error("Invalid email or password!");
+      error.status = 401;
+      throw error;
+    }
+
+    // Check password matches
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      const error: HttpError = new Error("Invalid email or password!");
+      error.status = 401;
+      throw error;
+    }
+
+    // Generate JWT (token)
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, {
+      expiresIn: "1h",
+    });
+
+    // Set token in HTTP-only cookie
+    const isProd = process.env.NODE_ENV === "production";
+    reply.setCookie("accessToken", token, {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: isProd ? "none" : "lax",
+      path: "/",
+      maxAge: 60 * 60 * 1000, // 1 hour
+    });
+
+    const { password: hashedPassword, ...userNotPassword } = user;
+    reply.code(200).send({
+      success: true,
+      data: { user: userNotPassword },
+      message: "Login successful",
+    });
+  } catch (err) {
+    throw err;
+  }
+};
+
+// Logout user
+export const logoutUser = (req: FastifyRequest, reply: FastifyReply) => {
+  const isProd = process.env.NODE_ENV === "production";
+  reply.clearCookie("accessToken", {
+    httpOnly: true,
+    secure: isProd,
+    sameSite: isProd ? "none" : "lax",
+  });
+};
+
+// Edit user profile
+export const EditUserProfile = async (
+  req: FastifyRequest<{ Body: Partial<UserType> }>,
+  reply: FastifyReply
+) => {
+  const userRepo = req.server.db.user;
+  const userId = req.user!.id;
+  const { firstName, lastName, password } = req.body;
+
+  try {
+    const user = await userRepo.findOne({ where: { id: userId } });
+
+    if (!user) {
       const error: HttpError = new Error("User not found!");
       error.status = 404;
       throw error;
     }
 
+    if (firstName) user.firstName = firstName;
+    if (lastName) user.lastName = lastName;
+    if (password) user.password = password;
+
+    await userRepo.updateAll(user);
+
+    const { password: hashedPassword, ...userNotPassword } = user;
     reply.code(200).send({
       success: true,
-      data: users,
-      message: "User profile retrieved successfully!",
+      data: userNotPassword,
+      message: "User updated successfully!",
     });
   } catch (err) {
     throw err;
