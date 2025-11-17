@@ -1,6 +1,6 @@
 import { type FastifyInstance, type FastifyPluginOptions } from "fastify";
 import { createUser, getUserProfile } from "./user.controller.js";
-import { CreateUserSchemaJSON } from "./user.schema.js";
+import { createUserSchemaJSON } from "./user.schema.js";
 
 const userRoutes = (
   fastify: FastifyInstance,
@@ -8,7 +8,7 @@ const userRoutes = (
 ) => {
   fastify.post("/signup", {
     schema: {
-      body: CreateUserSchemaJSON,
+      body: createUserSchemaJSON,
     },
     handler: createUser,
   });

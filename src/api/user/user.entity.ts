@@ -5,13 +5,15 @@ import {
   CreateDateColumn,
   BeforeInsert,
   BeforeUpdate,
+  OneToMany,
 } from "typeorm";
 import bcrypt from "bcrypt";
+import { Transactions } from "../transactions/transactions.entity.js";
 
 @Entity()
 export class User {
-  @PrimaryGeneratedColumn()
-  id!: number;
+  @PrimaryGeneratedColumn("uuid")
+  id!: string;
 
   @Column({ type: "varchar" })
   firstName!: string;
@@ -37,4 +39,7 @@ export class User {
     if (!this.password) return;
     this.password = await bcrypt.hash(this.password, 10);
   }
+
+  @OneToMany(() => Transactions, (transaction) => transaction.user)
+  transactions!: Transactions;
 }

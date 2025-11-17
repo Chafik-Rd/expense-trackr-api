@@ -1,7 +1,5 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import type { HttpError } from "../../types/fastify.type.js";
-import { User } from "./user.entity.js";
-import { AppDataSource } from "../../data-source.js";
 import type { UserType } from "../../types/user.type.js";
 
 // Create user
@@ -38,7 +36,7 @@ export const createUser = async (
     reply.code(201).send({
       success: true,
       data: userwithoutPass,
-      message: "InternUser created successfully!",
+      message: "User created successfully!",
     });
   } catch (err) {
     throw err;

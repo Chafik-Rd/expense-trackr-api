@@ -1,9 +1,11 @@
 import fastify from "fastify";
 import dotenv from "dotenv";
 
-import userRoutes from "./api/user/user.route.js";
 import { centralizedError } from "./middleware/centralizedError.js";
 import dbPlugin from "./plugins/db.js";
+import userRoutes from "./api/user/user.route.js";
+import transactionRoutes from "./api/transactions/transactions.route.js";
+import fastifyMultipart from "@fastify/multipart";
 
 // Load environment variables from .env file
 dotenv.config();
@@ -13,9 +15,16 @@ const app = fastify({
 });
 
 app.register(dbPlugin);
-// API Routes
-app.register(userRoutes,{prefix:"/api/v1/user"});
+app.register(fastifyMultipart,{attachFieldsToBody: true,});
 
+// API Routes
+app.register(
+  (instance) => {
+    instance.register(userRoutes, { prefix: "/user" });
+    instance.register(transactionRoutes, { prefix: "/transaction" });
+  },
+  { prefix: "/api/v1" }
+);
 // Centralized Error Handling Middleware
 app.setErrorHandler(centralizedError);
 
