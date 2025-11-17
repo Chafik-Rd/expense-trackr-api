@@ -1,11 +1,14 @@
 {
    "dependencies": {
       "@fastify/cors": "^11.1.0",
+      "@fastify/multipart": "^9.3.0",
       "bcrypt": "^6.0.0",
+      "cloudinary": "^2.8.0",
       "dotenv": "^17.2.3",
       "fastify": "^5.6.2",
       "pg": "^8.16.3",
       "reflect-metadata": "^0.2.2",
+      "tnthai": "^1.0.4",
       "typeorm": "0.3.27",
       "zod": "^4.1.12"
    },
@@ -14,7 +17,7 @@
    "description": "",
    "main": "dist/server.js",
    "scripts": {
-      "test": "echo \"Error: no test specified\" && exit 1",
+      "test": "ts-node src/tests/sanitize.test.ts",
       "build": "tsc -p tsconfig.json",
       "start": "node dist/server.js",
       "dev": "tsx watch src/server.ts",
