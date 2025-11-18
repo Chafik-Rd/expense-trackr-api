@@ -9,6 +9,7 @@ import userRoutes from "./api/user/user.route.js";
 import transactionRoutes from "./api/transactions/transactions.route.js";
 import accountRoutes from "./api/account/account.route.js";
 import { categoryRoutes } from "./api/category/category.route.js";
+import { reportRoutes } from "./api/report/report.route.js";
 
 // Load environment variables from .env file
 dotenv.config();
@@ -34,6 +35,7 @@ app.register(
     instance.register(transactionRoutes, { prefix: "/transaction" });
     instance.register(accountRoutes, { prefix: "/account" });
     instance.register(categoryRoutes, { prefix: "/category" });
+    instance.register(reportRoutes, { prefix: "/report" });
   },
   { prefix: "/api/v1" }
 );

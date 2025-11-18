@@ -18,11 +18,11 @@ export class Category {
   id!: string;
 
   @Column({ type: "uuid", nullable: true })
-  user_id!: string;
+  user_id!: string | null;
 
   @ManyToOne(() => User, (user) => user.category, { onDelete: "CASCADE" })
   @JoinColumn({ name: "user_id" })
-  user!: User;
+  user!: User | null;
 
   @Column({ type: "varchar" })
   name!: string;

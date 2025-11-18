@@ -24,7 +24,7 @@ const transactionRoutes = (
   // Delete transaction
   fastify.delete("/:transId", deleteTransaction);
 
-  // Get account
+  // Get transaction
   fastify.get("/", {
     schema: {
       querystring: getQuerySchemaJSON,
