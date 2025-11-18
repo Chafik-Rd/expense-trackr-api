@@ -9,27 +9,30 @@ import type {
 import { createPaginationMeta } from "../../utils/pagination.js";
 import { badWordReplace } from "../../utils/string.js";
 import { Between, type FindOptionsWhere } from "typeorm";
-import type { Transactions } from "./transactions.entity.js";
+import { Transactions } from "./transactions.entity.js";
+import { Account } from "../account/account.entity.js";
+import type { ExportQueryType } from "../../types/report.type.js";
+import { formatDate } from "../../utils/date.js";
 
 // Create transactiomn
 export const createTransaction = async (
   req: FastifyRequest,
   reply: FastifyReply
 ) => {
-  const transRepo = req.server.db.transactions;
+  const queryRunner = req.server.db.dataSource.createQueryRunner();
   const userId = req.user!.id;
   const validatedBody = createTransactionSchema.parse(req.body);
   const { amount, file_image, note, category_id, account_id, type } =
     validatedBody;
-  let image_url: string | undefined;
+
+  await queryRunner.connect();
+  await queryRunner.startTransaction();
 
   try {
     // Upload file image to cloudinary
-    if (file_image) {
-      image_url = await uploadImage(file_image);
-    }
+    const image_url = file_image ? await uploadImage(file_image) : undefined;
 
-    const newTrans = transRepo.create({
+    const newTrans = queryRunner.manager.create(Transactions, {
       amount,
       file_image: image_url,
       note,
@@ -38,15 +41,28 @@ export const createTransaction = async (
       account_id,
       type,
     });
-    await transRepo.save(newTrans);
+    await queryRunner.manager.save(newTrans);
 
+    const amountChange = type === "income" ? amount : -amount;
+
+    await queryRunner.manager
+      .createQueryBuilder()
+      .update(Account)
+      .set({ current_balance: () => `current_balance + ${amountChange}` })
+      .where("id = :account_id", { account_id })
+      .execute();
+
+    await queryRunner.commitTransaction();
     reply.code(201).send({
       success: true,
       data: newTrans,
       message: "Transaction created successfully!",
     });
   } catch (err) {
+    await queryRunner.rollbackTransaction();
     throw err;
+  } finally {
+    await queryRunner.release();
   }
 };
 
@@ -55,12 +71,15 @@ export const deleteTransaction = async (
   req: FastifyRequest<{ Params: TransactionParams }>,
   reply: FastifyReply
 ) => {
-  const transRepo = req.server.db.transactions;
+  const queryRunner = req.server.db.dataSource.createQueryRunner();
   const userId = req.user!.id;
   const { transId } = req.params;
 
+  await queryRunner.connect();
+  await queryRunner.startTransaction();
+
   try {
-    const transaction = await transRepo.findOne({
+    const transaction = await queryRunner.manager.findOne(Transactions, {
       where: { id: transId, user_id: userId },
     });
 
@@ -70,11 +89,26 @@ export const deleteTransaction = async (
       throw error;
     }
 
-    await transRepo.remove(transaction);
+    await queryRunner.manager.remove(transaction);
+
+    const rollbackAmount =
+      transaction.type === "income" ? -transaction.amount : transaction.amount;
+
+    await queryRunner.manager
+      .createQueryBuilder()
+      .update(Account)
+      .set({ current_balance: () => `current_balance + ${rollbackAmount}` })
+      .where("id = :account_id", { account_id: transaction.account_id })
+      .execute();
+
+    await queryRunner.commitTransaction();
 
     reply.code(204).send();
   } catch (err) {
+    await queryRunner.rollbackTransaction();
     throw err;
+  } finally {
+    await queryRunner.release();
   }
 };
 
@@ -83,42 +117,74 @@ export const editTransaction = async (
   req: FastifyRequest<{ Params: TransactionParams }>,
   reply: FastifyReply
 ) => {
-  const transRepo = req.server.db.transactions;
+  const queryRunner = req.server.db.dataSource.createQueryRunner();
   const userId = req.user!.id;
   const { transId } = req.params;
   const validatedBody = createTransactionSchema.parse(req.body);
   const { amount, file_image, note, category_id, account_id, type } =
     validatedBody;
 
+  await queryRunner.connect();
+  await queryRunner.startTransaction();
+
   try {
-    const transaction = await transRepo.findOne({
+    const oldTrans = await queryRunner.manager.findOne(Transactions, {
       where: { id: transId, user_id: userId },
     });
 
-    if (!transaction) {
+    if (!oldTrans) {
       const error: HttpError = new Error("Transaction not found!");
       error.status = 404;
       throw error;
     }
-    if (amount) transaction.amount = amount;
-    if (note) transaction.note = note;
-    if (category_id) transaction.category_id = category_id;
-    if (account_id) transaction.account_id = account_id;
-    if (type) transaction.type = type;
+
+    // Roll back amount from account
+    const rollbackAmount =
+      oldTrans.type === "income" ? -oldTrans.amount : oldTrans.amount;
+
+    await queryRunner.manager
+      .createQueryBuilder()
+      .update(Account)
+      .set({ current_balance: () => `current_balance + ${rollbackAmount}` })
+      .where("id = :account_id", { account_id: oldTrans.account_id })
+      .execute();
+
+    // Edit transaction
+    const newTrans = oldTrans;
+    if (amount) newTrans.amount = amount;
+    if (note) newTrans.note = note;
+    if (category_id) newTrans.category_id = category_id;
+    if (account_id) newTrans.account_id = account_id;
+    if (type) newTrans.type = type;
     if (file_image) {
       const image_url = await uploadImage(file_image);
-      transaction.file_image = image_url;
+      newTrans.file_image = image_url;
     }
 
-    await transRepo.updateAll(transaction);
+    await queryRunner.manager.save(newTrans);
 
-    reply.code(20).send({
+    // Apply amount from account
+    const applyAmount =
+      newTrans.type === "income" ? newTrans.amount : -newTrans.amount;
+
+    await queryRunner.manager
+      .createQueryBuilder()
+      .update(Account)
+      .set({ current_balance: () => `current_balance + ${applyAmount}` })
+      .where("id = :account_id", { account_id: newTrans.account_id })
+      .execute();
+
+    await queryRunner.commitTransaction();
+    reply.code(200).send({
       success: true,
-      data: transaction,
+      data: newTrans,
       message: "Transaction updated successfully!",
     });
   } catch (err) {
+    await queryRunner.rollbackTransaction();
     throw err;
+  } finally {
+    await queryRunner.release();
   }
 };
 
@@ -155,19 +221,12 @@ export const getTransaction = async (
       order: { created_at: "DESC" },
     });
 
-    let sanitizedTransactions = transactions;
-
-    if (transactions.length !== 0) {
-      sanitizedTransactions = transactions.map((transaction) => {
-        const sanitizedNote = transaction.note
-          ? badWordReplace(transaction.note)
-          : transaction.note;
-        return {
-          ...transaction,
-          note: sanitizedNote,
-        };
-      });
-    }
+    const sanitizedTransactions = transactions.map((transaction) => ({
+      ...transaction,
+      note: transaction.note
+        ? badWordReplace(transaction.note)
+        : transaction.note,
+    }));
 
     // Pagination
     const { meta } = createPaginationMeta(total, page, limit, skip);
@@ -178,6 +237,84 @@ export const getTransaction = async (
       meta,
       message: "Transactions retrieved successfully!",
     });
+  } catch (err) {
+    throw err;
+  }
+};
+
+// Get transactions export
+export const getTransactionExport = async (
+  req: FastifyRequest<{ Querystring: ExportQueryType }>,
+  reply: FastifyReply
+) => {
+  const transRepo = req.server.db.transactions;
+  const userId = req.user!.id;
+  const { format, startDate, endDate } = req.query;
+
+  // Default startDate and endDate
+  const now = new Date();
+
+  const defaultEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+  const end = endDate ? new Date(endDate) : defaultEnd;
+
+  const defaultStart = new Date(end.getFullYear(), end.getMonth(), 1);
+  const start = startDate ? new Date(startDate) : defaultStart;
+
+  const endFilter = new Date(end);
+  endFilter.setDate(endFilter.getDate() + 1);
+
+  try {
+    const transactions = await transRepo.find({
+      where: { user_id: userId, created_at: Between(start, endFilter) },
+      select: {
+        id: true,
+        amount: true,
+        type: true,
+        note: true,
+        created_at: true,
+        category: {
+          name: true,
+        },
+        account: {
+          name: true,
+        },
+      },
+      relations: { category: true, account: true },
+    });
+
+    const formatLower = (format || "csv").toLowerCase();
+    const fileName = `transactions_export_${formatDate(start)}_to_${formatDate(
+      end
+    )}.${formatLower}`;
+    if (formatLower === "json") {
+      // Export file .json
+      reply.header("Content-Type", "application/json");
+      reply.header("Content-Disposition", `attachment; filename=${fileName}`);
+
+      // Convert data to String
+      const jsonContent = JSON.stringify(transactions, null, 2);
+      reply.send(jsonContent);
+    } else if (formatLower === "csv") {
+      // Export file .csv
+      reply.header("Content-Type", "text/csv; charset=utf-8");
+      reply.header("Content-Disposition", `attachment; filename=${fileName}`);
+
+      const header = "Date,Account,Amount,Type,Category,Note\n";
+      // Convert data to csv
+      const csvContent = transactions
+        .map(
+          (t) =>
+            `${formatDate(t.created_at)},${t.account.name},${t.amount},${
+              t.type
+            },${t.category.name},"${(t.note || "").replace(/"/g, '""')}"`
+        )
+        .join("\n");
+      reply.send(header + csvContent);
+    } else {
+      const error: HttpError = new Error("Unsupported export format.");
+      error.status = 400;
+      throw error;
+    }
   } catch (err) {
     throw err;
   }

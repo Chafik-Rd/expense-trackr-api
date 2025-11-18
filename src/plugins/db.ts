@@ -7,6 +7,7 @@ import { Category } from "../api/category/category.entity.js";
 
 export default fp(async (fastify) => {
   fastify.decorate("db", {
+    dataSource: AppDataSource,
     user: AppDataSource.getRepository(User),
     transactions: AppDataSource.getRepository(Transactions),
     account: AppDataSource.getRepository(Account),

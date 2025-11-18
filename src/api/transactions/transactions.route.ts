@@ -4,6 +4,7 @@ import {
   deleteTransaction,
   editTransaction,
   getTransaction,
+  getTransactionExport,
 } from "./transactions.controller.js";
 import { authUser } from "../../middleware/authUser.js";
 import { getQuerySchemaJSON } from "../../schemas/shared.schema.js";
@@ -30,6 +31,13 @@ const transactionRoutes = (
       querystring: getQuerySchemaJSON,
     },
     handler: getTransaction,
+  });
+  // Get transaction
+  fastify.get("/export", {
+    schema: {
+      querystring: getQuerySchemaJSON,
+    },
+    handler: getTransactionExport,
   });
 };
 export default transactionRoutes;
