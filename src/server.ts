@@ -1,12 +1,16 @@
 import { app } from "./app.js";
 import { AppDataSource } from "./data-source.js";
+import { seedDatabase } from "./utils/seeder.js";
 
-const port = +(process.env.PORT || 8085);
+const port = Number(process.env.PORT || 8085);
 
 (async () => {
   try {
     await AppDataSource.initialize();
     console.log("Database connected successfully! 🐘");
+
+    await seedDatabase();
+
     app.listen({ port, host: "0.0.0.0" }, (err, address) => {
       if (err) {
         console.error(err);
