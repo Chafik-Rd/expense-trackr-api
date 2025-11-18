@@ -17,7 +17,7 @@ export class Category {
   @PrimaryGeneratedColumn("uuid")
   id!: string;
 
-  @Column({ type: "uuid" })
+  @Column({ type: "uuid", nullable: true })
   user_id!: string;
 
   @ManyToOne(() => User, (user) => user.category, { onDelete: "CASCADE" })

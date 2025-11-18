@@ -20,7 +20,9 @@ export const createTransactionSchema = zod.object({
   account_id: MultipartTextField.transform((field) => field.value).pipe(
     zod.string()
   ),
-  type: MultipartTextField.transform((field) => field.value).pipe(zod.string()),
+  type: MultipartTextField.transform((field) => field.value).pipe(
+    zod.enum(["income", "expense"])
+  ),
 
   file_image: zod.any().optional(),
 });

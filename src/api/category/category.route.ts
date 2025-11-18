@@ -12,7 +12,7 @@ import {
 } from "./category.controller.js";
 import { getQuerySchemaJSON } from "../../schemas/shared.schema.js";
 
-const categoryRoutes = (
+export const categoryRoutes = (
   fastify: FastifyInstance,
   options: FastifyPluginOptions
 ) => {

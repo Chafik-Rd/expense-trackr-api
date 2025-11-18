@@ -5,6 +5,7 @@ import type {
 } from "../../types/category.type.js";
 import type { HttpError } from "../../types/fastify.type.js";
 import type { GetQueryType } from "../../types/shared.type.js";
+import { createPaginationMeta, createUrl } from "../../utils/pagination.js";
 
 // Create category
 export const createCategory = async (
@@ -100,17 +101,13 @@ export const getCategory = async (
       order: { created_at: "DESC" },
     });
 
-    const totalPages = Math.ceil(total / limit);
+    // Pagination
+    const { meta } = createPaginationMeta(total, page, limit, skip);
 
     reply.code(200).send({
       success: true,
       data: categorys,
-      meta: {
-        total,
-        page,
-        limit,
-        totalPages,
-      },
+      meta,
       message: "Categorys retrieved successfully!",
     });
   } catch (err) {

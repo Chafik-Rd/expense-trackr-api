@@ -2,6 +2,7 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 import type { AccountParams, AccountType } from "../../types/account.type.js";
 import type { HttpError } from "../../types/fastify.type.js";
 import type { GetQueryType } from "../../types/shared.type.js";
+import { createPaginationMeta } from "../../utils/pagination.js";
 
 // Create account
 export const createAccount = async (
@@ -116,17 +117,13 @@ export const getAccount = async (
       order: { created_at: "DESC" },
     });
 
-    const totalPages = Math.ceil(total / limit);
+    // Pagination
+    const { meta } = createPaginationMeta(total, page, limit, skip);
 
     reply.code(200).send({
       success: true,
       data: accounts,
-      meta: {
-        total,
-        page,
-        limit,
-        totalPages,
-      },
+      meta,
       message: "Accounts retrieved successfully!",
     });
   } catch (err) {

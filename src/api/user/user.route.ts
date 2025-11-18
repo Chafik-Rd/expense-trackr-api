@@ -16,7 +16,7 @@ const userRoutes = (
   fastify: FastifyInstance,
   options: FastifyPluginOptions
 ) => {
-  // sign-up
+  // Sign-up
   fastify.post("/signup", {
     schema: {
       body: createUserSchemaJSON,
@@ -24,7 +24,7 @@ const userRoutes = (
     handler: createUser,
   });
 
-  // sign-in
+  // Sign-in
   fastify.post("/signin", {
     schema: {
       body: loginUserSchemaJSON,
@@ -32,10 +32,10 @@ const userRoutes = (
     handler: loginUser,
   });
 
-  // get profile
+  // Get profile
   fastify.get("/profile", { preHandler: [authUser], handler: getUserProfile });
 
-  // edit profile
+  // Edit profile
   fastify.patch("/profile", {
     preHandler: [authUser],
     schema: {

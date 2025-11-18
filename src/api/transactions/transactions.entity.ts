@@ -10,6 +10,8 @@ import {
 } from "typeorm";
 import { User } from "../user/user.entity.js";
 import { Account } from "../account/account.entity.js";
+import { Category } from "../category/category.entity.js";
+import type { TypeEnum } from "../../types/shared.type.js";
 
 @Entity()
 export class Transactions {
@@ -45,7 +47,7 @@ export class Transactions {
   amount!: number;
 
   @Column({ type: "varchar", enum: ["income", "expense"] })
-  type!: string;
+  type!: TypeEnum;
 
   @Column({ type: "varchar", nullable: true })
   file_image?: string | undefined;
