@@ -1,12 +1,10 @@
-export interface SummaryQueryType {
-  startDate?: string;
-  endDate?: string;
-}
+import zod from "zod";
+import type { exportQuerySchema, summaryQuerySchema } from "../api/report/report.schema.js";
 
-export interface ExportQueryType extends SummaryQueryType {
-  format: "csv" | "json";
-  groupBy?: "category" | "none";
-}
+export type SummaryQueryType = zod.infer<typeof summaryQuerySchema>;
+
+export type ExportQueryType = zod.infer<typeof exportQuerySchema>;
+
 
 export interface ExportResultType {
   content: string;

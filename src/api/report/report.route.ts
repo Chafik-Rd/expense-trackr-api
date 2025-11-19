@@ -5,6 +5,10 @@ import {
   getSummary,
   getSummaryExport,
 } from "./report.controller.js";
+import {
+  exportQuerySchemaJSON,
+  summaryQuerySchemaJSON,
+} from "./report.schema.js";
 
 export const reportRoutes = (
   fastify: FastifyInstance,
@@ -15,6 +19,9 @@ export const reportRoutes = (
 
   // Get summary
   fastify.get("/summary", {
+    schema: {
+      querystring: summaryQuerySchemaJSON,
+    },
     handler: getSummary,
   });
   // Get daily budget
@@ -23,6 +30,9 @@ export const reportRoutes = (
   });
   // Get summary export
   fastify.get("/summary/export", {
+    schema: {
+      querystring: exportQuerySchemaJSON,
+    },
     handler: getSummaryExport,
   });
 };
