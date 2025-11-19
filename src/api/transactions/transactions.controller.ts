@@ -3,6 +3,7 @@ import { uploadImage } from "../../utils/cloudinary.js";
 import { createTransactionSchema } from "./transactions.schema.js";
 import type { HttpError } from "../../types/fastify.type.js";
 import type {
+  ExportTransQueryType,
   GetTranQueryType,
   TransactionParams,
 } from "../../types/transactions.type.js";
@@ -11,8 +12,8 @@ import { badWordReplace } from "../../utils/string.js";
 import { Between, type FindOptionsWhere } from "typeorm";
 import { Transactions } from "./transactions.entity.js";
 import { Account } from "../account/account.entity.js";
-import type { ExportQueryType } from "../../types/report.type.js";
-import { formatDate } from "../../utils/date.js";
+import { formatDate, getExportDateRange } from "../../utils/date.js";
+import { exportFile } from "../../utils/exportFile.js";
 
 // Create transactiomn
 export const createTransaction = async (
@@ -244,7 +245,7 @@ export const getTransaction = async (
 
 // Get transactions export
 export const getTransactionExport = async (
-  req: FastifyRequest<{ Querystring: ExportQueryType }>,
+  req: FastifyRequest<{ Querystring: ExportTransQueryType }>,
   reply: FastifyReply
 ) => {
   const transRepo = req.server.db.transactions;
@@ -252,20 +253,14 @@ export const getTransactionExport = async (
   const { format, startDate, endDate } = req.query;
 
   // Default startDate and endDate
-  const now = new Date();
-
-  const defaultEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-  const end = endDate ? new Date(endDate) : defaultEnd;
-
-  const defaultStart = new Date(end.getFullYear(), end.getMonth(), 1);
-  const start = startDate ? new Date(startDate) : defaultStart;
-
-  const endFilter = new Date(end);
-  endFilter.setDate(endFilter.getDate() + 1);
+  const dateRange = getExportDateRange(startDate, endDate);
 
   try {
     const transactions = await transRepo.find({
-      where: { user_id: userId, created_at: Between(start, endFilter) },
+      where: {
+        user_id: userId,
+        created_at: Between(dateRange.start, dateRange.endFilter),
+      },
       select: {
         id: true,
         amount: true,
@@ -282,39 +277,30 @@ export const getTransactionExport = async (
       relations: { category: true, account: true },
     });
 
-    const formatLower = (format || "csv").toLowerCase();
-    const fileName = `transactions_export_${formatDate(start)}_to_${formatDate(
-      end
-    )}.${formatLower}`;
-    if (formatLower === "json") {
-      // Export file .json
-      reply.header("Content-Type", "application/json");
-      reply.header("Content-Disposition", `attachment; filename=${fileName}`);
-
-      // Convert data to String
-      const jsonContent = JSON.stringify(transactions, null, 2);
-      reply.send(jsonContent);
-    } else if (formatLower === "csv") {
-      // Export file .csv
-      reply.header("Content-Type", "text/csv; charset=utf-8");
-      reply.header("Content-Disposition", `attachment; filename=${fileName}`);
-
-      const header = "Date,Account,Amount,Type,Category,Note\n";
-      // Convert data to csv
-      const csvContent = transactions
+    // Export file
+    const csvOptions = {
+      header: "Date,Account,Amount,Type,Category,Note\n",
+      content: transactions
         .map(
           (t) =>
             `${formatDate(t.created_at)},${t.account.name},${t.amount},${
               t.type
             },${t.category.name},"${(t.note || "").replace(/"/g, '""')}"`
         )
-        .join("\n");
-      reply.send(header + csvContent);
-    } else {
-      const error: HttpError = new Error("Unsupported export format.");
-      error.status = 400;
-      throw error;
-    }
+        .join("\n"),
+    };
+
+    const { content, contentType, ExportFormat } = exportFile(
+      format,
+      transactions,
+      csvOptions
+    );
+    const fileName = `transactions_export_${formatDate(
+      dateRange.start
+    )}_to_${formatDate(dateRange.end)}.${ExportFormat}`;
+    reply.header("Content-Type", contentType);
+    reply.header("Content-Disposition", `attachment; filename=${fileName}`);
+    reply.send(content);
   } catch (err) {
     throw err;
   }

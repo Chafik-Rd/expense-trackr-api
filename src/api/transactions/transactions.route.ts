@@ -7,8 +7,7 @@ import {
   getTransactionExport,
 } from "./transactions.controller.js";
 import { authUser } from "../../middleware/authUser.js";
-import { getQuerySchemaJSON } from "../../schemas/shared.schema.js";
-import { transactionIdParamSchema } from "./transactions.schema.js";
+import { exportTransQuerySchemaJSON, getTranQuerySchemaJSON, transactionIdParamSchema } from "./transactions.schema.js";
 
 const transactionRoutes = (
   fastify: FastifyInstance,
@@ -21,7 +20,12 @@ const transactionRoutes = (
   fastify.post("/", createTransaction);
 
   // Edit transaction
-  fastify.patch("/", editTransaction);
+  fastify.patch("/:transId", {
+    schema: {
+      params: transactionIdParamSchema,
+    },
+    handler: editTransaction,
+  });
 
   // Delete transaction
   fastify.delete("/:transId", {
@@ -34,14 +38,14 @@ const transactionRoutes = (
   // Get transaction
   fastify.get("/", {
     schema: {
-      querystring: getQuerySchemaJSON,
+      querystring: getTranQuerySchemaJSON,
     },
     handler: getTransaction,
   });
   // Get transaction
   fastify.get("/export", {
     schema: {
-      querystring: getQuerySchemaJSON,
+      querystring: exportTransQuerySchemaJSON,
     },
     handler: getTransactionExport,
   });

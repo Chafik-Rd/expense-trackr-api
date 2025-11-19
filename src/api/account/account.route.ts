@@ -12,6 +12,7 @@ import {
 } from "./account.schema.js";
 import { getQuerySchemaJSON } from "../../schemas/shared.schema.js";
 
+
 const accountRoutes = (
   fastify: FastifyInstance,
   options: FastifyPluginOptions

@@ -1,4 +1,7 @@
-import zod, { property, uuid } from "zod";
+import zod from "zod";
+import { summaryQuerySchema } from "../report/report.schema.js";
+import { getSchemaWithoutSchemaTag } from "../../utils/schema.js";
+import { getQuerySchema } from "../../schemas/shared.schema.js";
 
 const MultipartTextField = zod.object({
   value: zod.string(),
@@ -29,15 +32,50 @@ export const createTransactionSchema = zod.object({
   file_image: zod.any().optional(),
 });
 
+// Param transactionId Schema
 export const transactionIdParamSchema = {
   type: "object",
-  property: {
+  properties: {
     transId: {
       type: "string",
       format: "uuid",
       description: "Transaction ID (UUID) to be deleted",
     },
-    required: ["transId"],
     additionalProperties: false,
   },
 };
+
+// Export transaction query schema
+export const exportTransQuerySchema = zod.object({
+  ...summaryQuerySchema.shape,
+  format: zod
+    .enum(["csv", "json"], {
+      message: "Export format must be 'csv' or 'json'.",
+    })
+    .default("csv"),
+});
+export const exportTransQuerySchemaJSON = getSchemaWithoutSchemaTag(
+  exportTransQuerySchema
+);
+
+// Get transaction query schema
+export const getTranQuerySchema = zod.object({
+  ...getQuerySchema.shape,
+  month: zod.coerce.number().int().min(1).max(12).optional(),
+  year: zod.coerce.number().int().min(2000).max(3000).optional(),
+  category_id: zod
+    .string()
+    .uuid("Invalid category ID format (must be UUID).")
+    .optional(),
+  account_id: zod
+    .string()
+    .uuid("Invalid account ID format (must be UUID).")
+    .optional(),
+  type: zod
+    .enum(["income", "expense"], {
+      message: "Type must be 'income' or 'expense'.",
+    })
+    .optional(),
+});
+export const getTranQuerySchemaJSON =
+  getSchemaWithoutSchemaTag(getTranQuerySchema);
