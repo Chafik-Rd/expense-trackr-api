@@ -13,3 +13,16 @@ export const createCategorySchemaJSON =
 const editCategorySchema = createCategorySchema.partial();
 export const editCategorySchemaJSON =
   getSchemaWithoutSchemaTag(editCategorySchema);
+
+// Param category Schema
+export const categoryIdParamSchema = {
+  type: "object",
+  properties: {
+    categoryId: {
+      type: "string",
+      format: "uuid",
+      description: "Category ID (UUID) to be deleted",
+    },
+    additionalProperties: false,
+  },
+};

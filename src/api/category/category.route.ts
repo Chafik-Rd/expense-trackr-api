@@ -1,6 +1,7 @@
 import type { FastifyInstance, FastifyPluginOptions } from "fastify";
 import { authUser } from "../../middleware/authUser.js";
 import {
+  categoryIdParamSchema,
   createCategorySchemaJSON,
   editCategorySchemaJSON,
 } from "./category.schema.js";
@@ -27,15 +28,16 @@ export const categoryRoutes = (
     handler: createCategory,
   });
 
-  //Edit account
-  fastify.patch("/:accountId", {
+  //Edit category
+  fastify.patch("/:categoryId", {
     schema: {
+      params: categoryIdParamSchema,
       body: editCategorySchemaJSON,
     },
     handler: editCategory,
   });
 
-  // Get account
+  // Get category
   fastify.get("/", {
     schema: {
       querystring: getQuerySchemaJSON,
@@ -43,6 +45,11 @@ export const categoryRoutes = (
     handler: getCategory,
   });
 
-  // Delete account
-  fastify.delete("/:categoryId", deleteCategory);
+  // Delete category
+  fastify.delete("/:categoryId", {
+    schema: {
+      params: categoryIdParamSchema,
+    },
+    handler: deleteCategory,
+  });
 };

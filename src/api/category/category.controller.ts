@@ -6,6 +6,7 @@ import type {
 import type { HttpError } from "../../types/fastify.type.js";
 import type { GetQueryType } from "../../types/shared.type.js";
 import { createPaginationMeta, createUrl } from "../../utils/pagination.js";
+import { In } from "typeorm";
 
 // Create category
 export const createCategory = async (
@@ -95,7 +96,7 @@ export const getCategory = async (
   const skip = (page - 1) * limit;
   try {
     const [categorys, total] = await categoryRepo.findAndCount({
-      where: { user_id: userId },
+      where: { user_id: In([userId, null]) },
       take: limit,
       skip,
       order: { created_at: "DESC" },
