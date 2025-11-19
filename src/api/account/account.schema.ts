@@ -15,3 +15,16 @@ export const createAccountSchemaJSON =
 const editAccountSchema = createAccountSchema.partial();
 export const editAccountSchemaJSON =
   getSchemaWithoutSchemaTag(editAccountSchema);
+
+// Param account Schema
+export const accountIdParamSchema = {
+  type: "object",
+  properties: {
+    accountId: {
+      type: "string",
+      format: "uuid",
+      description: "Account ID (UUID) to be deleted",
+    },
+    additionalProperties: false,
+  },
+};

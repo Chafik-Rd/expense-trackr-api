@@ -7,11 +7,11 @@ import {
   getAccount,
 } from "./account.controller.js";
 import {
+  accountIdParamSchema,
   createAccountSchemaJSON,
   editAccountSchemaJSON,
 } from "./account.schema.js";
 import { getQuerySchemaJSON } from "../../schemas/shared.schema.js";
-
 
 const accountRoutes = (
   fastify: FastifyInstance,
@@ -31,6 +31,7 @@ const accountRoutes = (
   //Edit account
   fastify.patch("/:accountId", {
     schema: {
+      params: accountIdParamSchema,
       body: editAccountSchemaJSON,
     },
     handler: editAccount,
@@ -45,6 +46,11 @@ const accountRoutes = (
   });
 
   // Delete account
-  fastify.delete("/:accountId", deleteAccount);
+  fastify.delete("/:accountId", {
+    schema: {
+      params: accountIdParamSchema,
+    },
+    handler: deleteAccount,
+  });
 };
 export default accountRoutes;
