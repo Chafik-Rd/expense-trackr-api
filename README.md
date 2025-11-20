@@ -100,6 +100,11 @@ docker compose up -d
 
 ## 🗺️ เอกสาร API (API Documentation)
 
-เอกสาร API สำหรับ Endpoint ทั้งหมดถูกสร้างขึ้นด้วย [ระบุเครื่องมือที่ใช้ เช่น Fastify Swagger หรือ Postman Collection]
+เอกสาร API สำหรับ Endpoint ทั้งหมดถูกสร้างขึ้นด้วย Fastify Swagger
 
+- Development Mode: เข้าถึงได้ที่
+```
+http://localhost:8085/documentation
+```
+- Production:
 [เพิ่มลิงก์ไปยัง API Docs ที่นี่]
