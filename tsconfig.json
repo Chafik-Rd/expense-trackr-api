@@ -27,10 +27,11 @@
     "allowJs": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
-    
 
     // TypeORM
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true
-  }
+  },
+  "include": ["./src/**/*"],
+  "exclude": ["node_modules"]
 }
