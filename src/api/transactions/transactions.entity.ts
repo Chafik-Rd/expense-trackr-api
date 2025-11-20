@@ -20,14 +20,14 @@ export class Transactions {
   @Column({ type: "uuid" })
   user_id!: string;
 
-  @ManyToOne(() => User, (user) => user.transactions, { onDelete: "CASCADE" })
+  @ManyToOne("User", (user:User) => user.transactions, { onDelete: "CASCADE" })
   @JoinColumn({ name: "user_id" })
   user!: User;
 
   @Column({ type: "uuid" })
   category_id!: string;
 
-  @ManyToOne(() => Category, (category) => category.transactions, {
+  @ManyToOne("Category", (category:Category) => category.transactions, {
     onDelete: "CASCADE",
   })
   @JoinColumn({ name: "category_id" })
@@ -36,7 +36,7 @@ export class Transactions {
   @Column({ type: "uuid" })
   account_id!: string;
 
-  @ManyToOne(() => Account, (account) => account.transactions, {
+  @ManyToOne("Account", (account:Account) => account.transactions, {
     onDelete: "CASCADE",
   })
   @JoinColumn({ name: "account_id" })

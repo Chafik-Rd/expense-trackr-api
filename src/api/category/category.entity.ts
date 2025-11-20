@@ -20,7 +20,7 @@ export class Category {
   @Column({ type: "uuid", nullable: true })
   user_id!: string | null;
 
-  @ManyToOne(() => User, (user) => user.category, { onDelete: "CASCADE" })
+  @ManyToOne("User", (user: User) => user.category, { onDelete: "CASCADE" })
   @JoinColumn({ name: "user_id" })
   user!: User | null;
 
@@ -36,6 +36,9 @@ export class Category {
   @UpdateDateColumn({ type: "timestamptz" })
   updated_at!: Date;
 
-  @OneToMany(() => Transactions, (transactions) => transactions.category)
+  @OneToMany(
+    "Transactions",
+    (transactions: Transactions) => transactions.category
+  )
   transactions!: Transactions;
 }

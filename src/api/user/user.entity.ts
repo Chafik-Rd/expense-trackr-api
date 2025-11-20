@@ -43,12 +43,12 @@ export class User {
     this.password = await bcrypt.hash(this.password, 10);
   }
 
-  @OneToMany(() => Transactions, (transaction) => transaction.user)
+  @OneToMany("Transactions", (transaction: Transactions) => transaction.user)
   transactions!: Transactions;
 
-  @OneToMany(() => Account, (account) => account.user)
+  @OneToMany("Account", (account: Account) => account.user)
   account!: Account;
 
-  @OneToMany(() => Category, (category) => category.user)
+  @OneToMany("Category", (category: Category) => category.user)
   category!: Category;
 }
