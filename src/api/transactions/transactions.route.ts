@@ -7,8 +7,17 @@ import {
   getTransactionExport,
 } from "./transactions.controller.js";
 import { authUser } from "../../middleware/authUser.js";
-import { exportTransQuerySchemaJSON, getTranQuerySchemaJSON, transactionIdParamSchema } from "./transactions.schema.js";
-
+import {
+  CreateTranMultipartDocSchema,
+  exportTransQuerySchemaJSON,
+  getTranQuerySchemaJSON,
+  transactionIdParamSchema,
+} from "./transactions.schema.js";
+interface JsonSchemaBody {
+  type?: string;
+  properties?: Record<string, any>;
+  required?: string[];
+}
 const transactionRoutes = (
   fastify: FastifyInstance,
   options: FastifyPluginOptions
@@ -17,11 +26,27 @@ const transactionRoutes = (
   fastify.addHook("preHandler", authUser);
 
   // Create transaction
-  fastify.post("/", createTransaction);
+  fastify.post("/", {
+    schema: {
+      tags: ["transaction"],
+      security: [
+        {
+          cookieAuth: [],
+        },
+      ],
+    },
+    handler: createTransaction,
+  });
 
   // Edit transaction
   fastify.patch("/:transId", {
     schema: {
+      tags: ["transaction"],
+      security: [
+        {
+          cookieAuth: [],
+        },
+      ],
       params: transactionIdParamSchema,
     },
     handler: editTransaction,
@@ -30,6 +55,12 @@ const transactionRoutes = (
   // Delete transaction
   fastify.delete("/:transId", {
     schema: {
+      tags: ["transaction"],
+      security: [
+        {
+          cookieAuth: [],
+        },
+      ],
       params: transactionIdParamSchema,
     },
     handler: deleteTransaction,
@@ -38,6 +69,12 @@ const transactionRoutes = (
   // Get transaction
   fastify.get("/", {
     schema: {
+      tags: ["transaction"],
+      security: [
+        {
+          cookieAuth: [],
+        },
+      ],
       querystring: getTranQuerySchemaJSON,
     },
     handler: getTransaction,
@@ -45,6 +82,12 @@ const transactionRoutes = (
   // Get transaction
   fastify.get("/export", {
     schema: {
+      tags: ["transaction"],
+      security: [
+        {
+          cookieAuth: [],
+        },
+      ],
       querystring: exportTransQuerySchemaJSON,
     },
     handler: getTransactionExport,

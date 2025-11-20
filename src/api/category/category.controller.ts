@@ -72,7 +72,7 @@ export const editCategory = async (
     if (name) category.name = name;
     if (type) category.type = type;
 
-    await categoryRepo.updateAll(category);
+    await categoryRepo.save(category);
 
     reply.code(200).send({
       success: true,

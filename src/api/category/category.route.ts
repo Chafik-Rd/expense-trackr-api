@@ -23,6 +23,12 @@ export const categoryRoutes = (
   // Create category
   fastify.post("/", {
     schema: {
+      tags: ["category"],
+      security: [
+        {
+          cookieAuth: [],
+        },
+      ],
       body: createCategorySchemaJSON,
     },
     handler: createCategory,
@@ -31,6 +37,12 @@ export const categoryRoutes = (
   //Edit category
   fastify.patch("/:categoryId", {
     schema: {
+      tags: ["category"],
+      security: [
+        {
+          cookieAuth: [],
+        },
+      ],
       params: categoryIdParamSchema,
       body: editCategorySchemaJSON,
     },
@@ -40,6 +52,12 @@ export const categoryRoutes = (
   // Get category
   fastify.get("/", {
     schema: {
+      tags: ["category"],
+      security: [
+        {
+          cookieAuth: [],
+        },
+      ],
       querystring: getQuerySchemaJSON,
     },
     handler: getCategory,
@@ -48,6 +66,12 @@ export const categoryRoutes = (
   // Delete category
   fastify.delete("/:categoryId", {
     schema: {
+      tags: ["category"],
+      security: [
+        {
+          cookieAuth: [],
+        },
+      ],
       params: categoryIdParamSchema,
     },
     handler: deleteCategory,

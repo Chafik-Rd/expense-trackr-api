@@ -42,7 +42,7 @@ export class Transactions {
   @JoinColumn({ name: "account_id" })
   account!: Account;
 
-  @Column({ type: "integer" })
+  @Column({ type: "decimal", precision: 10, scale: 2 })
   amount!: number;
 
   @Column({ type: "varchar", enum: ["income", "expense"] })

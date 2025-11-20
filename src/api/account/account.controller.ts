@@ -87,7 +87,7 @@ export const editAccount = async (
     if (current_balance) account.current_balance = current_balance;
     if (is_active) account.is_active = is_active;
 
-    await accountRepo.updateAll(account);
+    await accountRepo.save(account);
 
     reply.code(200).send({
       success: true,

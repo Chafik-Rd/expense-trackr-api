@@ -20,17 +20,37 @@ export const reportRoutes = (
   // Get summary
   fastify.get("/summary", {
     schema: {
+      tags: ["report"],
+      security: [
+        {
+          cookieAuth: [],
+        },
+      ],
       querystring: summaryQuerySchemaJSON,
     },
     handler: getSummary,
   });
   // Get daily budget
   fastify.get("/daily-budget", {
+    schema: {
+      tags: ["report"],
+      security: [
+        {
+          cookieAuth: [],
+        },
+      ],
+    },
     handler: getDailyBudget,
   });
   // Get summary export
   fastify.get("/summary/export", {
     schema: {
+      tags: ["report"],
+      security: [
+        {
+          cookieAuth: [],
+        },
+      ],
       querystring: exportQuerySchemaJSON,
     },
     handler: getSummaryExport,

@@ -23,6 +23,5 @@ export const categoryIdParamSchema = {
       format: "uuid",
       description: "Category ID (UUID) to be deleted",
     },
-    additionalProperties: false,
   },
 };

@@ -29,7 +29,7 @@ const exportToCsv = (options: CsvOptionsType): ExportResultType => {
   const { header, content } = options;
 
   // Validate CSV options
-  if (!header || !content) {
+  if (!header || content === undefined || content === null) {
     const error = new Error(
       "Both header and content are required for CSV export"
     ) as HttpError;

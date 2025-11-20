@@ -23,6 +23,12 @@ const accountRoutes = (
   // Create account
   fastify.post("/", {
     schema: {
+      tags: ["account"],
+      security: [
+        {
+          cookieAuth: [],
+        },
+      ],
       body: createAccountSchemaJSON,
     },
     handler: createAccount,
@@ -31,6 +37,12 @@ const accountRoutes = (
   //Edit account
   fastify.patch("/:accountId", {
     schema: {
+      tags: ["account"],
+      security: [
+        {
+          cookieAuth: [],
+        },
+      ],
       params: accountIdParamSchema,
       body: editAccountSchemaJSON,
     },
@@ -40,6 +52,12 @@ const accountRoutes = (
   // Get account
   fastify.get("/", {
     schema: {
+      tags: ["account"],
+      security: [
+        {
+          cookieAuth: [],
+        },
+      ],
       querystring: getQuerySchemaJSON,
     },
     handler: getAccount,
@@ -48,6 +66,12 @@ const accountRoutes = (
   // Delete account
   fastify.delete("/:accountId", {
     schema: {
+      tags: ["account"],
+      security: [
+        {
+          cookieAuth: [],
+        },
+      ],
       params: accountIdParamSchema,
     },
     handler: deleteAccount,

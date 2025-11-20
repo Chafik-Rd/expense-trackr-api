@@ -1,12 +1,16 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import type { HttpError } from "../../types/fastify.type.js";
-import type { UserLoginType, UserType } from "../../types/user.type.js";
+import type {
+  CreateUserType,
+  EditUserType,
+  UserLoginType,
+} from "../../types/user.type.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 // Create user
 export const createUser = async (
-  req: FastifyRequest<{ Body: UserType }>,
+  req: FastifyRequest<{ Body: CreateUserType }>,
   reply: FastifyReply
 ) => {
   const userRepo = req.server.db.user;
@@ -136,7 +140,7 @@ export const logoutUser = (req: FastifyRequest, reply: FastifyReply) => {
 
 // Edit user profile
 export const EditUserProfile = async (
-  req: FastifyRequest<{ Body: Partial<UserType> }>,
+  req: FastifyRequest<{ Body: Partial<EditUserType> }>,
   reply: FastifyReply
 ) => {
   const userRepo = req.server.db.user;
@@ -156,7 +160,7 @@ export const EditUserProfile = async (
     if (lastName) user.lastName = lastName;
     if (password) user.password = password;
 
-    await userRepo.updateAll(user);
+    await userRepo.save(user);
 
     const { password: hashedPassword, ...userNotPassword } = user;
     reply.code(200).send({

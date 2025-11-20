@@ -19,6 +19,7 @@ const userRoutes = (
   // Sign-up
   fastify.post("/signup", {
     schema: {
+      tags: ["user"],
       body: createUserSchemaJSON,
     },
     handler: createUser,
@@ -27,18 +28,36 @@ const userRoutes = (
   // Sign-in
   fastify.post("/signin", {
     schema: {
+      tags: ["user"],
       body: loginUserSchemaJSON,
     },
     handler: loginUser,
   });
 
   // Get profile
-  fastify.get("/profile", { preHandler: [authUser], handler: getUserProfile });
+  fastify.get("/profile", {
+    preHandler: [authUser],
+    schema: {
+      tags: ["user"],
+      security: [
+        {
+          cookieAuth: [],
+        },
+      ],
+    },
+    handler: getUserProfile,
+  });
 
   // Edit profile
   fastify.patch("/profile", {
     preHandler: [authUser],
     schema: {
+      tags: ["user"],
+      security: [
+        {
+          cookieAuth: [],
+        },
+      ],
       body: editUserSchemaJSON,
     },
     handler: EditUserProfile,

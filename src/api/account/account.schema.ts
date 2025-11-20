@@ -25,6 +25,5 @@ export const accountIdParamSchema = {
       format: "uuid",
       description: "Account ID (UUID) to be deleted",
     },
-    additionalProperties: false,
   },
 };

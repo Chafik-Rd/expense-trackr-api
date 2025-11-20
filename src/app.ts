@@ -5,6 +5,8 @@ import cookie from "@fastify/cookie";
 import helmet from "@fastify/helmet";
 import cors from "@fastify/cors";
 import rateLimit from "@fastify/rate-limit";
+import fastifySwagger from "@fastify/swagger";
+import fastifySwaggerUi from "@fastify/swagger-ui";
 
 import { centralizedError } from "./middleware/centralizedError.js";
 import dbPlugin from "./plugins/db.js";
@@ -14,6 +16,7 @@ import accountRoutes from "./api/account/account.route.js";
 import { categoryRoutes } from "./api/category/category.route.js";
 import { reportRoutes } from "./api/report/report.route.js";
 import { globalRateLimitOptions } from "./middleware/rateLimiter.js";
+import { swaggerOptions } from "./plugins/swagger.config.js";
 
 // Load environment variables from .env file
 dotenv.config();
@@ -38,7 +41,25 @@ const corsOption = {
 };
 app.register(cors, corsOption);
 
-// Apply rate limiting middleware to all requests
+// Swagger configuration
+app.register(fastifySwagger, swaggerOptions);
+
+// Swagger UI (Interactive Web Page)
+app.register(fastifySwaggerUi, {
+  routePrefix: "/documentation",
+  uiConfig: {
+    docExpansion: "full",
+    deepLinking: false,
+  },
+  staticCSP: true,
+  // Setting swagger read schema to use zod
+  transformSpecification: (swaggerObject, request, reply) => {
+    return swaggerObject;
+  },
+  transformSpecificationClone: true,
+});
+
+// Apply rate limiting middleware to all requestsate limite
 app.register(rateLimit, globalRateLimitOptions);
 
 // Middleware to  cookies

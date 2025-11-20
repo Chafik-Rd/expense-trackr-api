@@ -26,5 +26,8 @@ export const createUserSchema = zod.object({
 export const createUserSchemaJSON = getSchemaWithoutSchemaTag(createUserSchema);
 
 // Edit user
-const editUserSchema = createUserSchema.partial();
+const baseEditSchema = createUserSchema.omit({
+  email: true, // ตัด 'email' ออกไป
+});
+export const editUserSchema = baseEditSchema.partial();
 export const editUserSchemaJSON = getSchemaWithoutSchemaTag(editUserSchema);
